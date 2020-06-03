@@ -4,17 +4,18 @@ orbs:
   node: circleci/node@3.0.0
 
 jobs:
-  install-node-example:
-    docker:
-      - image: 'cimg/base:stable'
+  run-tests:
+    executor: node/default
     steps:
       - checkout
-      - node/install:
-          install-yarn: true
-          node-version: latest
-      - run: node --version
+      - node/install-packages
+      - run: # run tests
+          name: Run Test and Coverage
+          command: |
+            npm test -- --coverage
 
 workflows:
   build-and-test:
     jobs:
-      - install-node-example
+      - run-tests
+
