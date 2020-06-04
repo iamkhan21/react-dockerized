@@ -2,14 +2,15 @@ version: 2.1
 
 orbs:
   node: circleci/node@3.0.0
+  docker: circleci/docker@1.2.1
 
 jobs:
-  run-tests:
+  run_tests:
     executor: node/default
     steps:
       - checkout
       - node/install-packages
-      - run: # run tests
+      - run:
           name: Run Test and Coverage
           command: |
             npm test -- --coverage
@@ -17,5 +18,13 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - run-tests
-
+      - run_tests
+      - docker/publish:
+          image: iamkhan21/$CIRCLE_PROJECT_REPONAME
+          dockerfile: Dockerfile.prod
+          requires:
+            - run_tests
+          filters:
+            branches:
+              only:
+                - master
